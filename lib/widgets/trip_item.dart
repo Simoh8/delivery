@@ -1,10 +1,10 @@
-// // widgets/order_item_card.dart
 // import 'package:flutter/material.dart';
 // import 'package:delivery/models/trip.dart';
 //
-// class OrderItemCard extends StatelessWidget {
+// class OrderItem extends StatelessWidget {
 //   final OrderItemModel order;
-//   const OrderItemCard({super.key, required this.order});
+//
+//   const OrderItem({super.key, required this.order});
 //
 //   @override
 //   Widget build(BuildContext context) {
@@ -24,8 +24,9 @@
 //           ],
 //         ),
 //         trailing: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: [            Text(order.formattedOrderTime),
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           children: [
+//             Text(order.formattedOrderTime),
 //             const SizedBox(height: 4),
 //             Container(
 //               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -54,14 +55,18 @@
 //       builder: (context) {
 //         return Padding(
 //           padding: const EdgeInsets.all(16),
-//           child: Column(
+//           child: ListView(
 //             children: [
-//               Text('Order #${order.id}',
-//                   style: Theme.of(context).textTheme.titleLarge),
+//               Text(
+//                 'Order #${order.id}',
+//                 style: Theme.of(context).textTheme.titleLarge,
+//               ),
 //               const Divider(),
 //               _buildDetailRow('Customer', order.customerName),
 //               _buildDetailRow('Phone', order.customerPhone),
 //               _buildDetailRow('Address', order.deliveryAddress),
+//               _buildDetailRow('Status', order.statusString),
+//               _buildDetailRow('Order Time', order.formattedOrderTime),
 //               const SizedBox(height: 16),
 //               const Text('Items:', style: TextStyle(fontWeight: FontWeight.bold)),
 //               ...order.items.map((item) => ListTile(
@@ -70,8 +75,13 @@
 //                 trailing: Text(item.formattedPrice),
 //               )).toList(),
 //               const Divider(),
-//               Text('Total: ${order.formattedAmount}',
-//                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+//               Text(
+//                 'Total: ${order.formattedAmount}',
+//                 style: const TextStyle(
+//                   fontSize: 18,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
 //             ],
 //           ),
 //         );
@@ -84,8 +94,10 @@
 //       padding: const EdgeInsets.symmetric(vertical: 8),
 //       child: Row(
 //         children: [
-//           Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
-//           const SizedBox(width: 8),
+//           Text(
+//             '$label: ',
+//             style: const TextStyle(fontWeight: FontWeight.bold),
+//           ),
 //           Text(value),
 //         ],
 //       ),
