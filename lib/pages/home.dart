@@ -122,7 +122,6 @@ class _HomePageState extends State<HomePage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final cardWidth = constraints.maxWidth * 0.5;
-              // each card takes 60% of available width (adjust as needed)
 
               return ListView(
                 scrollDirection: Axis.horizontal,
