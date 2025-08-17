@@ -118,32 +118,51 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 90, // give cards a fixed height
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              SummaryCard(
-                title: 'All Deliveries',
-                value: '${orders.length}',
-                color: Colors.blue,
-              ),
-              const SizedBox(width: 12),
-              SummaryCard(
-                title: 'Completed',
-                value: '$completed',
-                color: Colors.green,
-              ),
-              const SizedBox(width: 12),
-              SummaryCard(
-                title: 'Pending',
-                value: '$pending',
-                color: Colors.orange,
-              ),
-            ],
+          height: 90, // fixed card height
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = constraints.maxWidth * 0.5;
+              // each card takes 60% of available width (adjust as needed)
+
+              return ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  SizedBox(
+                    width: cardWidth,
+                    child: SummaryCard(
+                      title: 'All Deliveries',
+                      value: '${orders.length}',
+                      color: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: cardWidth,
+                    child: SummaryCard(
+                      title: 'Completed',
+                      value: '$completed',
+                      color: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  SizedBox(
+                    width: cardWidth,
+                    child: SummaryCard(
+                      title: 'Pending',
+                      value: '$pending',
+                      color: Colors.orange,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ],
     );
+
+
+
   }
 
   Widget _tripSummaryCard(List<OrderItemModel> orders) {
