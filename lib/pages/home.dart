@@ -112,16 +112,35 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Today\'s Summary', style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          'Today\'s Summary',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            SummaryCard(title: 'All Deliveries', value: '${orders.length}', color: Colors.blue),
-            const SizedBox(width: 12),
-            SummaryCard(title: 'Completed', value: '$completed', color: Colors.green),
-            const SizedBox(width: 12),
-            SummaryCard(title: 'Pending', value: '$pending', color: Colors.orange),
-          ],
+        SizedBox(
+          height: 90, // give cards a fixed height
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              SummaryCard(
+                title: 'All Deliveries',
+                value: '${orders.length}',
+                color: Colors.blue,
+              ),
+              const SizedBox(width: 12),
+              SummaryCard(
+                title: 'Completed',
+                value: '$completed',
+                color: Colors.green,
+              ),
+              const SizedBox(width: 12),
+              SummaryCard(
+                title: 'Pending',
+                value: '$pending',
+                color: Colors.orange,
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -199,35 +218,35 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Future<void> _handleLogout() async {
-  //   final confirmed = await showDialog<bool>(
-  //     context: context,
-  //     builder: (_) => AlertDialog(
-  //       title: const Text('Logout'),
-  //       content: const Text('Are you sure you want to log out?'),
-  //       actions: [
-  //         TextButton(
-  //           child: const Text('Cancel'),
-  //           onPressed: () => Navigator.pop(context, false),
-  //         ),
-  //         ElevatedButton(
-  //           child: const Text('Logout'),
-  //           onPressed: () => Navigator.pop(context, true),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  //
-  //   if (confirmed == true) {
-  //     await SessionManager.logout();
-  //     if (mounted) {
-  //       Navigator.pushAndRemoveUntil(
-  //         context,
-  //         MaterialPageRoute(builder: (_) => const SplashScreen()),
-  //             (route) => false,
-  //       );
-  //     }
-  //   }
-  // }
+// Future<void> _handleLogout() async {
+//   final confirmed = await showDialog<bool>(
+//     context: context,
+//     builder: (_) => AlertDialog(
+//       title: const Text('Logout'),
+//       content: const Text('Are you sure you want to log out?'),
+//       actions: [
+//         TextButton(
+//           child: const Text('Cancel'),
+//           onPressed: () => Navigator.pop(context, false),
+//         ),
+//         ElevatedButton(
+//           child: const Text('Logout'),
+//           onPressed: () => Navigator.pop(context, true),
+//         ),
+//       ],
+//     ),
+//   );
+//
+//   if (confirmed == true) {
+//     await SessionManager.logout();
+//     if (mounted) {
+//       Navigator.pushAndRemoveUntil(
+//         context,
+//         MaterialPageRoute(builder: (_) => const SplashScreen()),
+//             (route) => false,
+//       );
+//     }
+//   }
+// }
 
 }

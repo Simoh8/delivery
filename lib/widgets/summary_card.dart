@@ -10,8 +10,7 @@ class SummaryCard extends StatelessWidget {
     required this.title,
     required this.value,
     required this.color,
-    required this.icon,
-    super.key,
+    this.icon = Icons.info, // 👈 default icon    super.key,
   });
 
   @override
