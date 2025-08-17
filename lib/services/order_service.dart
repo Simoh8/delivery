@@ -55,7 +55,7 @@ class OrderService {
       }
     } catch (e) {
       // If error occurs, try loading from cache
-      print('⚠️ Network error: $e. Trying cached orders...');
+      print(' Network error: $e. Trying cached orders...');
 
       final prefs = await SharedPreferences.getInstance();
       final cached = prefs.getString(_cacheKey);
