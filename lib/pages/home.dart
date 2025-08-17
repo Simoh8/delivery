@@ -5,9 +5,7 @@ import 'package:delivery/models/order.dart';
 import 'package:delivery/pages/transactions_page.dart';
 import 'package:delivery/pages/messages_page.dart';
 import 'package:delivery/pages/profile_page.dart';
-import 'package:delivery/services/session_manager.dart';
 import 'package:delivery/services/order_service.dart';
-import 'package:delivery/pages/splash.dart';
 import 'package:delivery/utils/logout_helper.dart';
 
 class HomePage extends StatefulWidget {
