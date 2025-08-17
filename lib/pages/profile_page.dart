@@ -4,6 +4,11 @@ import 'package:delivery/services/session_manager.dart';
 import 'package:delivery/services/ApiService.dart';
 import 'package:delivery/models/user_info.dart';
 import 'package:delivery/constants/app_constants.dart';
+import 'package:provider/provider.dart';
+
+import 'package:flutter/cupertino.dart';
+
+import '../theme/theme_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -194,7 +199,31 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Profile"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: CupertinoSlidingSegmentedControl<int>(
+              groupValue: themeProvider.themeMode == ThemeMode.dark ? 1 : 0,
+              children: const {
+                0: Text("Light"),
+                1: Text("Dark"),
+              },
+              onValueChanged: (index) {
+                if (index == 0) {
+                  themeProvider.toggleTheme(false);
+                } else {
+                  themeProvider.toggleTheme(true);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

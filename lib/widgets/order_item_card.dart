@@ -57,79 +57,89 @@ class OrderItemCard extends StatelessWidget {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Text(
-                    '${order.id}',
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Divider(),
+        final theme = Theme.of(context);
 
-                _buildColoredDetailRow('Customer', order.customerName),
-                _buildColoredDetailRow('Address', order.deliveryAddress),
-
-                const SizedBox(height: 16),
-                const Text(
-                  'Delivery Note Items:',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.deepPurple,
-                  ),
-                ),
-                const SizedBox(height: 8),
-
-                ...order.items.map((stop) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      stop.name,
-                      style: const TextStyle(
+        return Theme(
+          // 👇 override bottom sheet to always use light surface & dark text
+          data: theme.copyWith(
+            cardColor: Colors.white,
+            textTheme: ThemeData.light().textTheme,
+            iconTheme: const IconThemeData(color: Colors.black87),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      '${order.id}',
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color: Colors.black87,
+                        color: Colors.blueAccent,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    if (stop.noteItems.isNotEmpty)
-                      Column(
-                        children: stop.noteItems.map((item) {
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(
-                              item.itemName,
-                              style: const TextStyle(color: Colors.black87),
-                            ),
-                            trailing: Text(
-                              'Qty: ${item.qty}',
-                              style: const TextStyle(color: Colors.teal),
-                            ),
-                          );
-                        }).toList(),
-                      )
-                    else
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: Text(
-                          'No items for this stop',
-                          style: TextStyle(color: Colors.redAccent),
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(),
+
+                  _buildColoredDetailRow('Customer', order.customerName, theme),
+                  _buildColoredDetailRow('Address', order.deliveryAddress, theme),
+
+                  const SizedBox(height: 16),
+                  Text(
+                    'Delivery Note Items:',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary, // adapts
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  ...order.items.map((stop) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        stop.name,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    const Divider(),
-                  ],
-                )),
-              ],
+                      const SizedBox(height: 4),
+                      if (stop.noteItems.isNotEmpty)
+                        Column(
+                          children: stop.noteItems.map((item) {
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(
+                                item.itemName,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              trailing: Text(
+                                'Qty: ${item.qty}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.secondary,
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      else
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            'No items for this stop',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      const Divider(),
+                    ],
+                  )),
+                ],
+              ),
             ),
           ),
         );
@@ -137,7 +147,7 @@ class OrderItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildColoredDetailRow(String label, String value) {
+  Widget _buildColoredDetailRow(String label, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(

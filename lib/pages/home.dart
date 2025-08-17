@@ -199,18 +199,25 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildRecentOrdersSection() => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text('Recent Assigned Delivery Trips',
-            style: Theme.of(context).textTheme.titleLarge),
-        TextButton(
-          onPressed: () => _viewAllOrders(context),
-          child: const Text('View All'),
-        ),
-      ],
+  Widget _buildRecentOrdersSection() => Theme(
+    data: Theme.of(context).copyWith(
+      textTheme: ThemeData.light().textTheme,   // 👈 readable text
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Recent Assigned Delivery Trips',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          TextButton(
+            onPressed: () => _viewAllOrders(context),
+            child: const Text('View All'),
+          ),
+        ],
+      ),
     ),
   );
 
