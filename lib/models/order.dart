@@ -1,13 +1,53 @@
-import 'package:flutter/material.dart';  // For Colors and IconData
-import 'package:flutter/cupertino.dart'; // Alternative import if needed
+import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+class NoteItem {
+  final String itemName;
+  final double qty;
+  final double rate;
 
+  NoteItem({required this.itemName, required this.qty, required this.rate});
+
+  factory NoteItem.fromJson(Map<String, dynamic> json) => NoteItem(
+    itemName: json['item_name'] ?? '',
+    qty: (json['qty'] ?? 0).toDouble(),
+    rate: (json['rate'] ?? 0).toDouble(),
+  );
+}
+
+class StopModel {
+  final String id;
+  final String name;
+  final String description;
+  final double? latitude;
+  final double? longitude;
+  final List<NoteItem> noteItems;
+
+  StopModel({
+    required this.id,
+    required this.name,
+    required this.description,
+    this.latitude,
+    this.longitude,
+    required this.noteItems,
+  });
+
+  factory StopModel.fromJson(Map<String, dynamic> json) => StopModel(
+    id: json['id'],
+    name: json['name'],
+    description: json['description'] ?? '',
+    latitude: (json['latitude'] ?? 0).toDouble(),
+    longitude: (json['longitude'] ?? 0).toDouble(),
+    noteItems: (json['note_items'] as List<dynamic>? ?? [])
+        .map((i) => NoteItem.fromJson(i)).toList(),
+  );
+}
 
 class OrderItemModel {
   final String id;
   final String customerName;
   final String customerPhone;
   final String deliveryAddress;
-  final double distance; // in km
+  final double distance;
   final double amount;
   final int itemCount;
   final DateTime orderTime;
@@ -33,7 +73,7 @@ class OrderItemModel {
 
   String get formattedAmount => '\$${amount.toStringAsFixed(2)}';
 
-  String get distanceString => '${distance.toStringAsFixed(1)} km away';
+  String get distanceString => '${(distance / 1000).toStringAsFixed(1)} Est Distance km';
 
   String get itemCountString => '$itemCount ${itemCount == 1 ? 'item' : 'items'}';
 
@@ -41,15 +81,10 @@ class OrderItemModel {
     final now = DateTime.now();
     final difference = now.difference(orderTime);
 
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inHours < 1) {
-      return '${difference.inMinutes} mins ago';
-    } else if (difference.inDays < 1) {
-      return '${difference.inHours} hours ago';
-    } else {
-      return '${difference.inDays} days ago';
-    }
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inHours < 1) return '${difference.inMinutes} mins ago';
+    if (difference.inDays < 1) return '${difference.inHours} hours ago';
+    return '${difference.inDays} days ago';
   }
 
   String get statusString {
@@ -93,21 +128,38 @@ class OrderItemModel {
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
     return OrderItemModel(
-      id: json['id'] as String,
-      customerName: json['customerName'] as String,
-      customerPhone: json['customerPhone'] as String,
-      deliveryAddress: json['deliveryAddress'] as String,
-      distance: (json['distance'] as num).toDouble(),
-      amount: (json['amount'] as num).toDouble(),
-      itemCount: json['itemCount'] as int,
-      orderTime: DateTime.parse(json['orderTime'] as String),
-      status: OrderStatus.values[json['status'] as int],
-      notes: json['notes'] as String?,
-      paymentMethod: json['paymentMethod'] as String?,
-      items: (json['items'] as List<dynamic>)
+      id: json['id']?.toString() ?? '',
+      customerName: json['customer_name']?.toString() ?? '',
+      customerPhone: json['customer_phone']?.toString() ?? '',
+      deliveryAddress: json['delivery_address']?.toString() ?? '',
+      distance: (json['distance'] is num) ? (json['distance'] as num).toDouble() : 0.0,
+      amount: (json['amount'] is num) ? (json['amount'] as num).toDouble() : 0.0,
+      itemCount: json['item_count'] is int ? json['item_count'] : int.tryParse(json['item_count']?.toString() ?? '0') ?? 0,
+      orderTime: DateTime.tryParse(json['order_time']?.toString() ?? '') ?? DateTime.now(),
+      status: _parseStatus(json['status']),
+      notes: json['notes']?.toString(),
+      paymentMethod: json['paymentMethod']?.toString(),
+      items: (json['items'] as List<dynamic>? ?? [])
           .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  static OrderStatus _parseStatus(dynamic value) {
+    switch (value?.toString().toLowerCase()) {
+      case 'pending':
+        return OrderStatus.pending;
+      case 'in transit':
+        return OrderStatus.inTransit;
+      case 'delivered':
+        return OrderStatus.delivered;
+      case 'cancelled':
+        return OrderStatus.cancelled;
+      case 'scheduled':
+        return OrderStatus.pending;
+      default:
+        return OrderStatus.pending;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -120,7 +172,7 @@ class OrderItemModel {
       'amount': amount,
       'itemCount': itemCount,
       'orderTime': orderTime.toIso8601String(),
-      'status': status.index,
+      'status': status.name,
       'notes': notes,
       'paymentMethod': paymentMethod,
       'items': items.map((item) => item.toJson()).toList(),
@@ -134,7 +186,10 @@ class OrderItem {
   final String description;
   final int quantity;
   final double price;
+  final double? latitude;
+  final double? longitude;
   final String? specialInstructions;
+  final List<NoteItem> noteItems; // 🔥 Add this
 
   const OrderItem({
     required this.id,
@@ -142,21 +197,28 @@ class OrderItem {
     required this.description,
     required this.quantity,
     required this.price,
+    this.latitude,
+    this.longitude,
     this.specialInstructions,
+    this.noteItems = const [], // 🔥 Default empty list
   });
 
   String get formattedPrice => '\$${price.toStringAsFixed(2)}';
-
   String get quantityString => 'Qty: $quantity';
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     return OrderItem(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String,
-      quantity: json['quantity'] as int,
-      price: (json['price'] as num).toDouble(),
-      specialInstructions: json['specialInstructions'] as String?,
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      quantity: json['quantity'] is int ? json['quantity'] : int.tryParse(json['quantity']?.toString() ?? '0') ?? 0,
+      price: (json['price'] is num) ? (json['price'] as num).toDouble() : 0.0,
+      latitude: json['latitude'] != null ? (json['latitude'] as num?)?.toDouble() : null,
+      longitude: json['longitude'] != null ? (json['longitude'] as num?)?.toDouble() : null,
+      specialInstructions: json['specialInstructions']?.toString(),
+      noteItems: (json['note_items'] as List<dynamic>? ?? []) // 🔥 Deserialize note_items
+          .map((i) => NoteItem.fromJson(i))
+          .toList(),
     );
   }
 
@@ -167,7 +229,14 @@ class OrderItem {
       'description': description,
       'quantity': quantity,
       'price': price,
+      'latitude': latitude,
+      'longitude': longitude,
       'specialInstructions': specialInstructions,
+      'note_items': noteItems.map((item) => {
+        'item_name': item.itemName,
+        'qty': item.qty,
+        'rate': item.rate,
+      }).toList(),
     };
   }
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:delivery/pages/splash.dart';
-import 'package:delivery/pages//home.dart';
-
+import 'package:delivery/pages/home.dart';
+import 'package:delivery/pages/login.dart';
+import 'firebase_options.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,7 +20,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SplashScreen(),  // Start with splash screen
+      initialRoute: '/',
+      routes: {        '/': (context) => const SplashScreen(),
+        '/home': (context) => const HomePage(),
+        '/login': (context) => const Login(),
+      },
     );
   }
 }

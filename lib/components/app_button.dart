@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
-  final Function()? onTap;
+  final VoidCallback onTap; // 🔥 make it reusable
+
   const AppButton({super.key, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // This was missing - now properly connected
+      onTap: onTap, // call the function passed in
       child: Container(
         padding: const EdgeInsets.all(25),
         margin: const EdgeInsets.symmetric(horizontal: 25),

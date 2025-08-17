@@ -52,44 +52,114 @@ class OrderItemCard extends StatelessWidget {
   void _showOrderDetails(BuildContext context, OrderItemModel order) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Text('Order #${order.id}',
-                  style: Theme.of(context).textTheme.titleLarge),
-              const Divider(),
-              _buildDetailRow('Customer', order.customerName),
-              _buildDetailRow('Phone', order.customerPhone),
-              _buildDetailRow('Address', order.deliveryAddress),
-              const SizedBox(height: 16),
-              const Text('Items:', style: TextStyle(fontWeight: FontWeight.bold)),
-              ...order.items.map((item) => ListTile(
-                title: Text(item.name),
-                subtitle: Text(item.description),
-                trailing: Text(item.formattedPrice),
-              )).toList(),
-              const Divider(),
-              Text('Total: ${order.formattedAmount}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            ],
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    '${order.id}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blueAccent,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Divider(),
+
+                _buildColoredDetailRow('Customer', order.customerName),
+                _buildColoredDetailRow('Address', order.deliveryAddress),
+
+                const SizedBox(height: 16),
+                const Text(
+                  'Delivery Note Items:',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.deepPurple,
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                ...order.items.map((stop) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      stop.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    if (stop.noteItems.isNotEmpty)
+                      Column(
+                        children: stop.noteItems.map((item) {
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              item.itemName,
+                              style: const TextStyle(color: Colors.black87),
+                            ),
+                            trailing: Text(
+                              'Qty: ${item.qty}',
+                              style: const TextStyle(color: Colors.teal),
+                            ),
+                          );
+                        }).toList(),
+                      )
+                    else
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8.0),
+                        child: Text(
+                          'No items for this stop',
+                          style: TextStyle(color: Colors.redAccent),
+                        ),
+                      ),
+                    const Divider(),
+                  ],
+                )),
+              ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildDetailRow(String label, String value) {
+  Widget _buildColoredDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('$label:', style: const TextStyle(fontWeight: FontWeight.bold)),
-          const SizedBox(width: 8),
-          Text(value),
+          Text(
+            '$label: ',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.black87),
+            ),
+          ),
         ],
       ),
     );
   }
+
+
 }
