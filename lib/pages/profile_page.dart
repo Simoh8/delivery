@@ -5,7 +5,7 @@ import 'package:delivery/services/ApiService.dart';
 import 'package:delivery/models/user_info.dart';
 import 'package:delivery/constants/app_constants.dart';
 import 'package:provider/provider.dart';
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../theme/theme_provider.dart';
@@ -47,6 +47,7 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       final response = await ApiService.get(AppConstants.fecthUserInfoEndpoint);
       final data = response['message'];
+
       if (data != null && data['success_key'] == 1) {
         final info = UserInfo.fromJson(data['data']);
         await SessionManager.saveUserInfo(info);
@@ -57,14 +58,23 @@ class _ProfilePageState extends State<ProfilePage> {
             loading = false;
           });
         }
+      } else {
+        _handleFetchError();
       }
     } catch (e) {
       debugPrint('❌ Error fetching user info: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to load user info")),
-        );
-      }
+      _handleFetchError();
+    }
+  }
+
+  void _handleFetchError() {
+    if (userInfo == null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to load user info")),
+      );
+      setState(() {
+        loading = false;
+      });
     }
   }
 
@@ -136,15 +146,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // void _logout(BuildContext context) async {
-  //   await SessionManager.logout();
-  //   if (!mounted) return;
-  //   Navigator.pushAndRemoveUntil(
-  //     context,
-  //     MaterialPageRoute(builder: (_) => const Login()),
-  //         (route) => false,
-  //   );
-  // }
 
   void _showEditDialog() {
     final nameParts = userInfo?.fullName.split(' ') ?? [];
@@ -232,9 +233,19 @@ class _ProfilePageState extends State<ProfilePage> {
           children: [
             CircleAvatar(
               radius: 50,
-              backgroundImage: userInfo?.profileImage.isNotEmpty == true
-                  ? NetworkImage('${AppConstants.baseUrl}${userInfo!.profileImage}')
-                  : const NetworkImage('https://example.com/profile.jpg'),
+              backgroundColor: Colors.grey[200],
+              child: ClipOval(
+                child: CachedNetworkImage(
+                  imageUrl: (userInfo?.profileImage.isNotEmpty ?? false)
+                      ? '${AppConstants.baseUrl}${userInfo!.profileImage}'
+                      : 'https://example.com/profile.jpg',
+                  fit: BoxFit.cover,
+                  width: 100,
+                  height: 100,
+                  placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
